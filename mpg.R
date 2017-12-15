@@ -50,10 +50,6 @@ ggplot(w) +
   
 
 
-m <- ts(q$mpg, frequency = 12, start=c(2005,3), end=c(2017,9))
-fit <- auto.arima(m)
-plot(forecast(fit, h=5))
-
 
 library(lubridate)
 
