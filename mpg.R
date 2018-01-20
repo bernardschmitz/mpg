@@ -56,11 +56,41 @@ library(lubridate)
 library(dplyr)
 
 
-q <- mpg %>% group_by(yyyy=year(date)) %>% summarise(n=n(), g=sum(gallons), t=sum(gallons*price), p=mean(price))
+q <- mpg %>% 
+  group_by(yyyy=year(date)) %>% 
+  summarise(
+    n=n(), 
+    g=sum(gallons), 
+    t=sum(gallons*price), 
+    m=mean(gallons*price), 
+    p=mean(price))
   
-ggplot(q, aes(x=yyyy, y=t)) + geom_bar(stat='identity') + geom_smooth(method='lm')
+ggplot(q, aes(x=yyyy, y=t)) + 
+  geom_bar(stat='identity') + 
+  geom_smooth(method='lm')
 
-ggplot(q, aes(x=yyyy, y=t)) + geom_bar(aes(fill=n),stat='identity')
+ggplot(q, aes(x=yyyy, y=t)) + 
+  geom_bar(stat='identity') + 
+  geom_smooth(method='loess') +
+  xlab("Year") +
+  ylab("Cost") +
+  ggtitle("Annual Gas Expenditure")
+
+
+mpg %>% 
+  group_by(yyyy=year(date), mm=month(date)) %>% 
+  summarise(n=n(), 
+    g=sum(gallons), 
+    t=sum(gallons*price), 
+    p=mean(price)) %>%
+  ggplot(aes(x=factor(paste(yyyy, mm)), y=t)) +
+  geom_bar(aes(fill=t),
+           color='white', stat='identity') 
+
+
+ggplot(mpg, aes(gallons)) + geom_histogram(bins = 100)
+ggplot(mpg, aes(price)) + geom_histogram(bins = 100)
+ggplot(mpg, aes(miles)) + geom_histogram(bins = 100)
 
 
 mpg %>% group_by(d=floor_date(date, 'months')) %>% summarise(n=n(), mpg=mean(mpg)) %>% ggplot(aes(x=d, y=mpg)) + geom_bar(aes(fill=n),stat='identity')
@@ -141,6 +171,45 @@ g3 <- ggplot(d) +
 grid.arrange(g1, g2, g3, nrow=3)
 
 
+
+g1 <- ggplot(d) + 
+  geom_jitter(aes(x=cluster, y=mpg, color=cluster))
+
+g2 <- ggplot(d) + 
+  geom_jitter(aes(x=cluster, y=miles, color=cluster))
+
+g3 <- ggplot(d) + 
+  geom_jitter(aes(x=cluster, y=price, color=cluster))
+
+g4 <- ggplot(d) + 
+  geom_jitter(aes(x=cluster, y=gallons, color=cluster))
+
+grid.arrange(g1, g2, g3, g4, nrow=2)
+
+
+
+
+
+g1 <- ggplot(d) + 
+  geom_point(aes(x=mpg, y=miles, color=cluster))
+
+g2 <- ggplot(d) + 
+  geom_point(aes(x=mpg, y=price, color=cluster))
+
+g3 <- ggplot(d) + 
+  geom_point(aes(x=mpg, y=gallons, color=cluster))
+
+g4 <- ggplot(d) + 
+  geom_point(aes(x=miles, y=price, color=cluster))
+
+g5 <- ggplot(d) + 
+  geom_point(aes(x=price, y=gallons, color=cluster))
+
+g6 <- ggplot(d) + 
+  geom_point(aes(x=miles, y=gallons, color=cluster))
+
+
+grid.arrange(g1, g2, g3, g4, g5, g6, nrow=3)
 
 
 v <- mpg %>% group_by(yyyy=year(date), mm=month(date)) %>% summarise( mpg=sum(miles)/sum(gallons), tp=sum(price), n=n(), ap=mean(price), ag=mean(gallons), tg=sum(gallons), tm=sum(miles) , am=mean(miles) ) %>% arrange(yyyy, mm) %>% mutate( cm=cumsum(tm), ampg=cummean(mpg) )
