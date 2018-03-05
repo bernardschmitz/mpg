@@ -55,6 +55,34 @@ library(hexbin)
 ggplot(mpg) +
   geom_hex(aes(yyyymm, mpg), color='white') 
 
+library(dplyr)
+
+mpg %>% 
+  group_by(year) %>% 
+  summarise(m=mean(cost), l=t.test(cost)$conf.int[1], h=t.test(cost)$conf.int[2]) %>% 
+  ggplot(aes(year, m)) + 
+  geom_point() + 
+  geom_segment(aes(x=year, y=l, xend=year, yend=h))
+
+
+ggplot(mpg, aes(year, cost, group=year)) + 
+  geom_boxplot()
+
+
+mpg %>% 
+  group_by(year) %>% 
+  summarise(m=sum(miles)) %>% 
+  ggplot(aes(year, m)) + 
+  geom_bar(stat='identity') +
+  geom_smooth(method='lm')
+
+
+ggplot(mpg, aes(x=date, y=cumsum(miles))) + geom_line() 
+ggplot(mpg, aes(x=date, y=cumsum(gallons))) + geom_line() 
+ggplot(mpg, aes(x=date, y=cumsum(cost))) + geom_line() 
+
+ggplot(mpg, aes(x=date, y=miles/price)) + geom_line() 
+
 
 w <- mpg
 w$price <- scale(w$price)
