@@ -2,11 +2,20 @@
 mpg <- read.csv("mpg.csv", stringsAsFactors = F)
 
 mpg$date <- as.POSIXct(strptime(mpg$date, '%m/%d/%Y'))
-mpg$mpg = mpg$miles / mpg$gallons
+mpg$mpg <- mpg$miles / mpg$gallons
+mpg$cost <- mpg$gallons * mpg$price
+
+library(lubridate)
+
+mpg$year <- year(mpg$date)
+mpg$month <- month(mpg$date)
+mpg$day <- day(mpg$date)
+
+mpg$yyyymm <- floor_date(mpg$date, 'month')
 
 mpg <- mpg[complete.cases(mpg),]
 
-plot(mpg)
+# plot(mpg)
 
 
 library(ggplot2)
@@ -36,6 +45,15 @@ ggplot(mpg, aes(gallons)) +
   geom_density(color='black', fill='red', alpha=0.25) 
 
 
+ggplot(mpg, aes(year, mpg)) + geom_boxplot(aes(group=year))
+ggplot(mpg, aes(year, cost)) + geom_boxplot(aes(group=year))
+ggplot(mpg, aes(year, miles)) + geom_boxplot(aes(group=year))
+ggplot(mpg, aes(year, gallons)) + geom_boxplot(aes(group=year))
+
+library(hexbin)
+
+ggplot(mpg) +
+  geom_hex(aes(yyyymm, mpg), color='white') 
 
 
 w <- mpg
