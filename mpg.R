@@ -1,5 +1,7 @@
 
-mpg <- read.csv("mpg.csv", stringsAsFactors = F)
+library(data.table)
+
+mpg <- fread("mpg.csv", stringsAsFactors = F)
 
 mpg$date <- as.POSIXct(strptime(mpg$date, '%m/%d/%Y'))
 mpg$mpg <- mpg$miles / mpg$gallons
@@ -17,11 +19,14 @@ mpg <- mpg[complete.cases(mpg),]
 
 # plot(mpg)
 
+mpg[, lapply(.SD, sum), by=year, .SDcols=c('gallons', 'miles', 'cost')]
+
+mpg[, lapply(.SD, sum), by=year, .SDcols=c('gallons', 'miles', 'cost')][, lapply(.SD, mean), .SDcols=c('gallons', 'miles', 'cost')]
 
 library(ggplot2)
 library(GGally)
 
-ggpairs(mpg[,-1])
+ggpairs(mpg[,2:5])
 
 ggplot(mpg, aes(x=date, y=price)) + geom_point() + geom_smooth(method = 'lm')
 ggplot(mpg, aes(x=date, y=miles)) + geom_point() + geom_smooth(method = 'lm')
@@ -56,16 +61,17 @@ ggplot(mpg) +
   geom_hex(aes(yyyymm, mpg), color='white') 
 
 library(dplyr)
+library(Rmisc)
 
 mpg %>% 
   group_by(year) %>% 
-  summarise(m=mean(cost), l=t.test(cost)$conf.int[1], h=t.test(cost)$conf.int[2]) %>% 
+  dplyr::summarise(n=n(), m=mean(mpg), l=CI(mpg, ci=0.95)[[3]], h=CI(mpg, ci=0.95)[[1]]) %>% 
   ggplot(aes(year, m)) + 
-  geom_point() + 
-  geom_segment(aes(x=year, y=l, xend=year, yend=h))
+  geom_line(size=2) + 
+  geom_errorbar(aes(x=year, ymin=l, ymax=h))
 
 
-ggplot(mpg, aes(year, cost, group=year)) + 
+ggplot(mpg, aes(year, mpg, group=year)) + 
   geom_boxplot()
 
 
@@ -203,7 +209,55 @@ fit$cluster
 
 d$cluster <- factor(fit$cluster)
 
+
+library(reshape)
+
+dm <- melt(d)
+ggplot(dm, aes(cluster, value, fill=cluster)) + 
+  geom_boxplot() +
+  facet_wrap( ~ variable, nrow=2, scales = 'free_y') 
+
+
+mpg.s <- as.data.frame(apply(mpg[,c('miles', 'gallons', 'price', 'cost', 'mpg')], 2, scale))
+
+
+comp <- princomp( ~ miles + gallons + price + cost + mpg, data=mpg.s)
+comp
+summary(comp)
+plot(comp)
+biplot(comp)
+
+plot(comp$scores[,1], comp$scores[,2], pch=20, col=factor(comp$scores[,3]))
+
+d <- as.data.frame(comp$scores)
+
+
+fit <- kmeans(d[, 1:3], centers=6)
+
+#fit
+#fit$cluster
+
+d$cluster <- factor(fit$cluster)
+
+#plot(d$Comp.1, d$Comp.2, pch=20, col=factor(fit$cluster))
+
+ggplot(d) +
+  geom_point(aes(Comp.1, Comp.2, color=cluster))
+
+
+
+
+
 library(gridExtra)
+
+
+g1 <- ggplot(d, aes(cluster, miles)) + geom_boxplot()
+g2 <- ggplot(d, aes(cluster, gallons)) + geom_boxplot()
+g3 <- ggplot(d, aes(cluster, mpg)) + geom_boxplot()
+g4 <- ggplot(d, aes(cluster, price)) + geom_boxplot()
+grid.arrange(g1, g2, g3, g4, nrow=2)
+
+
 
 g1 <- ggplot(d) + 
   geom_point(aes(x=mpg, y=miles, color=cluster))
