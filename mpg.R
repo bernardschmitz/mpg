@@ -110,7 +110,7 @@ library(dplyr)
 
 q <- mpg %>% 
   group_by(yyyy=year(date)) %>% 
-  summarise(
+  dplyr::summarise(
     n=n(), 
     g=sum(gallons), 
     t=sum(gallons*price), 
@@ -131,7 +131,7 @@ ggplot(q, aes(x=yyyy, y=t)) +
 
 mpg %>% 
   group_by(yyyy=year(date), mm=month(date)) %>% 
-  summarise(n=n(), 
+  dplyr::summarise(n=n(), 
     g=sum(gallons), 
     t=sum(gallons*price), 
     p=mean(price)) %>%
@@ -145,16 +145,16 @@ ggplot(mpg, aes(price)) + geom_histogram(bins = 100)
 ggplot(mpg, aes(miles)) + geom_histogram(bins = 100)
 
 
-mpg %>% group_by(d=floor_date(date, 'months')) %>% summarise(n=n(), mpg=mean(mpg)) %>% ggplot(aes(x=d, y=mpg)) + geom_bar(aes(fill=n),stat='identity')
+mpg %>% group_by(d=floor_date(date, 'months')) %>% dplyr::summarise(n=n(), mpg=mean(mpg)) %>% ggplot(aes(x=d, y=mpg)) + geom_bar(aes(fill=n),stat='identity')
 
-mpg %>% group_by(d=floor_date(date, 'quarters')) %>% summarise(n=n(), mpg=mean(mpg)) %>% ggplot(aes(x=d, y=mpg)) + geom_bar(aes(fill=n),stat='identity')
+mpg %>% group_by(d=floor_date(date, 'quarters')) %>% dplyr::summarise(n=n(), mpg=mean(mpg)) %>% ggplot(aes(x=d, y=mpg)) + geom_bar(aes(fill=n),stat='identity')
 
-mpg %>% group_by(d=floor_date(date, 'years')) %>% summarise(n=n(), mpg=mean(mpg)) %>% ggplot(aes(x=d, y=mpg)) + geom_bar(aes(fill=n),stat='identity') + geom_hline(aes(yintercept=mean(mpg)), color='red') +
+mpg %>% group_by(d=floor_date(date, 'years')) %>% dplyr::summarise(n=n(), mpg=mean(mpg)) %>% ggplot(aes(x=d, y=mpg)) + geom_bar(aes(fill=n),stat='identity') + geom_hline(aes(yintercept=mean(mpg)), color='red') +
   geom_hline(aes(yintercept=mean(n)), color='black')
 
 library(forecast)
 
-q <- mpg %>% group_by(d=floor_date(date, 'months')) %>% summarise(n=n(), mpg=mean(mpg))
+q <- mpg %>% group_by(d=floor_date(date, 'months')) %>% dplyr::summarise(n=n(), mpg=mean(mpg))
 m <- ts(q$mpg, frequency = 12, start=c(2005,3), end=c(2017,9))
 fit <- auto.arima(m)
 plot(forecast(fit, h=12))
@@ -312,7 +312,7 @@ g6 <- ggplot(d) +
 grid.arrange(g1, g2, g3, g4, g5, g6, nrow=3)
 
 
-v <- mpg %>% group_by(yyyy=year(date), mm=month(date)) %>% summarise( mpg=sum(miles)/sum(gallons), tp=sum(price), n=n(), ap=mean(price), ag=mean(gallons), tg=sum(gallons), tm=sum(miles) , am=mean(miles) ) %>% arrange(yyyy, mm) %>% mutate( cm=cumsum(tm), ampg=cummean(mpg) )
+v <- mpg %>% group_by(yyyy=year(date), mm=month(date)) %>% dplyr::summarise( mpg=sum(miles)/sum(gallons), tp=sum(price), n=n(), ap=mean(price), ag=mean(gallons), tg=sum(gallons), tm=sum(miles) , am=mean(miles) ) %>% arrange(yyyy, mm) %>% mutate( cm=cumsum(tm), ampg=cummean(mpg) )
 
 
 
