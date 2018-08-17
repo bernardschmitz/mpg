@@ -55,6 +55,37 @@ ggplot(mpg, aes(year, cost)) + geom_boxplot(aes(group=year))
 ggplot(mpg, aes(year, miles)) + geom_boxplot(aes(group=year))
 ggplot(mpg, aes(year, gallons)) + geom_boxplot(aes(group=year))
 
+
+
+
+
+
+
+ggplot(mpg[, .(k=mean(price)), by=year], aes(year, k)) + 
+  geom_bar(stat = 'identity')
+
+ggplot(mpg[, .(k=mean(gallons)), by=year], aes(year, k)) + 
+  geom_bar(stat = 'identity')
+
+ggplot(mpg[, .(k=mean(miles)), by=year], aes(year, k)) + 
+  geom_bar(stat = 'identity')
+
+ggplot(mpg[, .(k=mean(cost)), by=year], aes(year, k)) + 
+  geom_bar(stat = 'identity')
+
+ggplot(mpg[, .(k=mean(mpg)), by=year], aes(year, k)) + 
+  geom_bar(stat = 'identity')
+
+ggplot(mpg[, .(k=.N), by=year], aes(year, k)) + 
+  geom_bar(stat = 'identity')
+           
+ggplot(mpg[, .(g=sum(gallons), fills=.N), by=year], aes(year, g, fill=fills)) + 
+  geom_bar(stat = 'identity')
+                      
+                      
+
+
+
 library(hexbin)
 
 ggplot(mpg) +
