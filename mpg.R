@@ -89,6 +89,11 @@ ggplot(mpg, aes(x=date, y=cumsum(cost))) + geom_line()
 
 ggplot(mpg, aes(x=date, y=miles/price)) + geom_line() 
 
+ggplot(mpg, aes(x=date, y=price/miles)) + geom_line() 
+
+ggplot(mpg, aes(x=date, y=miles/price)) + geom_boxplot() 
+ggplot(mpg, aes(x=date, y=price/miles)) + geom_boxplot() 
+
 
 w <- mpg
 w$price <- scale(w$price)
@@ -352,3 +357,4 @@ ggplot(as.data.frame(v)) + geom_boxplot(aes(x=mm, y=mpg, group=mm), outlier.colo
 ggplot(as.data.frame(v)) + geom_jitter(width=0.1, height=0.1, alpha=0.3, aes(x=mm, y=mpg, group=mm))
 
 ggplot(as.data.frame(v)) + geom_violin(aes(x=mm, y=mpg, group=mm)) 
+
