@@ -1,5 +1,7 @@
 
 library(data.table)
+library(lubridate)
+
 
 mpg <- fread("mpg.csv", stringsAsFactors = F)
 
@@ -7,7 +9,6 @@ mpg$date <- as.POSIXct(strptime(mpg$date, '%m/%d/%Y'))
 mpg$mpg <- mpg$miles / mpg$gallons
 mpg$cost <- mpg$gallons * mpg$price
 
-library(lubridate)
 
 mpg$year <- year(mpg$date)
 mpg$month <- month(mpg$date)
@@ -15,13 +16,39 @@ mpg$day <- day(mpg$date)
 
 mpg$yyyymm <- floor_date(mpg$date, 'month')
 
-mpg <- mpg[complete.cases(mpg),]
 
 # plot(mpg)
 
 mpg[, lapply(.SD, sum), by=year, .SDcols=c('gallons', 'miles', 'cost')]
 
 mpg[, lapply(.SD, sum), by=year, .SDcols=c('gallons', 'miles', 'cost')][, lapply(.SD, mean), .SDcols=c('gallons', 'miles', 'cost')]
+
+# gallons   miles     cost
+# 1: 2819.746 53586.9 9336.479
+total <- mpg[, lapply(.SD, sum, na.rm=T), .SDcols=c('gallons', 'miles', 'cost')]
+
+total[, `:=`(hours = as.numeric(difftime(max(mpg$date), min(mpg$date), units = 'hours')) )]
+
+#range(mpg$date)
+
+#difftime(max(mpg$date), min(mpg$date), units = 'hours')
+# Time difference of 4845.958 days
+
+
+mpg <- mpg[complete.cases(mpg),]
+
+
+driving.hours <- total$miles / 30
+
+driving <- driving.hours / total$hours
+not.driving <- 1 - driving
+
+total
+driving
+not.driving
+
+total$cost / driving.hours
+
 
 library(ggplot2)
 library(GGally)
@@ -89,7 +116,7 @@ ggplot(mpg[, .(g=sum(gallons), fills=.N), by=year], aes(year, g, fill=fills)) +
 library(hexbin)
 
 ggplot(mpg) +
-  geom_hex(aes(yyyymm, mpg), color='white') 
+  geom_hex(aes(yyyymm, mpg), color='white', bins=13*4) 
 
 library(dplyr)
 library(Rmisc)
@@ -228,17 +255,29 @@ library(cluster)
 
 plot(mpg$miles, mpg$price)
 
-d <- v
 d <- mpg[,c('price', 'gallons', 'miles')]
-d$mpg <- d$miles / d$gallons
+#d$mpg <- d$miles / d$gallons
 
-fit <- kmeans(d[,c('miles', 'gallons', 'mpg', 'price')], centers=5)
+ggpairs(d)
+
+d <- as.data.frame(scale(d))
+fit <- kmeans(d, centers=5)
 
 fit
 fit$cluster
-# plot(d$price, d$mpg, col=fit$cluster)
-# plot(d$gallons, d$miles, col=fit$cluster)
-# plot(d$gallons, d$price, col=fit$cluster)
+
+par(mfcol=c(2,2))
+plot(d$price, d$gallons, col=fit$cluster, pch=20)
+plot(d$gallons, d$miles, col=fit$cluster, pch=20)
+plot(d$miles, d$price, col=fit$cluster, pch=20)
+par(mfcol=c(1,1))
+
+par(mfcol=c(2,2))
+plot(d$cluster, d$gallons)
+plot(d$cluster, d$price)
+plot(d$cluster, d$miles)
+par(mfcol=c(1,1))
+
 # library(rgl)
 # plot3d(d)
 # plot3d(d, col=fit$cluster)
@@ -253,11 +292,13 @@ ggplot(dm, aes(cluster, value, fill=cluster)) +
   geom_boxplot() +
   facet_wrap( ~ variable, nrow=2, scales = 'free_y') 
 
+ggplot(dm, aes(cluster, value, fill=cluster)) + 
+  geom_points() +
+  facet_wrap( ~ variable, nrow=2, scales = 'free_y') 
 
-mpg.s <- as.data.frame(apply(mpg[,c('miles', 'gallons', 'price', 'cost', 'mpg')], 2, scale))
 
 
-comp <- princomp( ~ miles + gallons + price + cost + mpg, data=mpg.s)
+comp <- princomp( ~ miles + gallons + price, data=d)
 comp
 summary(comp)
 plot(comp)
