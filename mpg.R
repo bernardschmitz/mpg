@@ -268,8 +268,8 @@ fit$cluster
 
 par(mfcol=c(2,2))
 plot(d$price, d$gallons, col=fit$cluster, pch=20)
-plot(d$gallons, d$miles, col=fit$cluster, pch=20)
-plot(d$miles, d$price, col=fit$cluster, pch=20)
+plot(d$price, d$miles, col=fit$cluster, pch=20)
+plot(d$miles, d$gallons, col=fit$cluster, pch=20)
 par(mfcol=c(1,1))
 
 par(mfcol=c(2,2))
