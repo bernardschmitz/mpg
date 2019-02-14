@@ -38,7 +38,7 @@ total[, `:=`(hours = as.numeric(difftime(max(mpg$date), min(mpg$date), units = '
 mpg <- mpg[complete.cases(mpg),]
 
 
-driving.hours <- total$miles / 30
+driving.hours <- total$miles / 45
 
 driving <- driving.hours / total$hours
 not.driving <- 1 - driving
@@ -237,7 +237,7 @@ qq <- mpg %>% mutate(yyyy=year(date), g=cumsum(gallons), t=cumsum(gallons*price)
 ggplot(qq, aes(x=yyyy, y=miles, group=yyyy)) + geom_boxplot(aes(fill=miles)) + scale_fill_continuous()
 
 
-x <- lapply(2005:2017, function(y) { 
+x <- lapply(2005:2018, function(y) { 
     p <- seq(1, 100, length.out = 100) / 100
     data.frame(y=y, p=p, q=quantile(qq[qq$yyyy==y,]$price, p)) 
   })
@@ -272,17 +272,18 @@ plot(d$price, d$miles, col=fit$cluster, pch=20)
 plot(d$miles, d$gallons, col=fit$cluster, pch=20)
 par(mfcol=c(1,1))
 
-par(mfcol=c(2,2))
-plot(d$cluster, d$gallons)
-plot(d$cluster, d$price)
-plot(d$cluster, d$miles)
-par(mfcol=c(1,1))
 
 # library(rgl)
 # plot3d(d)
 # plot3d(d, col=fit$cluster)
 
 d$cluster <- factor(fit$cluster)
+
+par(mfcol=c(2,2))
+plot(d$cluster, d$gallons)
+plot(d$cluster, d$price)
+plot(d$cluster, d$miles)
+par(mfcol=c(1,1))
 
 
 library(reshape)
@@ -293,7 +294,7 @@ ggplot(dm, aes(cluster, value, fill=cluster)) +
   facet_wrap( ~ variable, nrow=2, scales = 'free_y') 
 
 ggplot(dm, aes(cluster, value, fill=cluster)) + 
-  geom_points() +
+  geom_point() +
   facet_wrap( ~ variable, nrow=2, scales = 'free_y') 
 
 
