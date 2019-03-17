@@ -16,6 +16,17 @@ mpg$day <- day(mpg$date)
 
 mpg$yyyymm <- floor_date(mpg$date, 'month')
 
+mpg[order(date), dt := as.numeric(date - shift(date))]
+mpg[1,'dt'] <- 0
+
+mean(mpg$dt)
+
+plot(mpg$dt, mpg$miles)
+
+plot(mpg$price, mpg$gallons, col=mpg$miles)
+
+ggplot(mpg, aes(price, gallons)) +
+  geom_point(aes(color=dt))
 
 # plot(mpg)
 
@@ -50,10 +61,25 @@ not.driving
 total$cost / driving.hours
 
 
+#####
+
+driving <- data.frame(mph = seq(20,80,by=5))
+driving$hours <- total$miles / driving$mph
+driving$driving <- driving$hours / total$hours
+driving$not.driving <- 1 - driving$driving
+driving$cost <- total$cost / driving$hours
+
+driving
+
+ggplot(driving, aes(hours, cost)) + geom_line() + geom_point(aes(color=mph))
+
+#####
+
 library(ggplot2)
 library(GGally)
 
-ggpairs(mpg[,2:5])
+plot(mpg[,2:6])
+ggpairs(mpg[,2:6])
 
 ggplot(mpg, aes(x=date, y=price)) + geom_point() + geom_smooth(method = 'lm')
 ggplot(mpg, aes(x=date, y=miles)) + geom_point() + geom_smooth(method = 'lm')
