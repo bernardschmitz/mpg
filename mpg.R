@@ -1,7 +1,7 @@
 
 library(data.table)
 library(lubridate)
-
+library(ggplot2)
 
 mpg <- fread("mpg.csv", stringsAsFactors = F)
 
