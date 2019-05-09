@@ -61,6 +61,14 @@ not.driving
 total$cost / driving.hours
 
 
+price <- 18000
+yy <- length(unique(year(mpg$date)))
+insurance <- 1000
+
+total_cost <- price + insurance*yy + sum(mpg$cost)
+
+total_cost / total$miles
+
 #####
 
 driving <- data.frame(mph = seq(20,80,by=5))
@@ -72,6 +80,22 @@ driving$cost <- total$cost / driving$hours
 driving
 
 ggplot(driving, aes(hours, cost)) + geom_line() + geom_point(aes(color=mph))
+
+#
+
+city_speed <- 40
+hwy_speed <- 65
+
+pro <- 0.5
+
+hh <- total$miles * pro / city_speed  + total$miles * (1-pro) / hwy_speed 
+dr <- hh / total$hours
+n.dr <- 1-dr
+ct <- total$cost / hh
+
+
+
+
 
 #####
 
