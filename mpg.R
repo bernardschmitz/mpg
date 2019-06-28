@@ -104,6 +104,7 @@ library(GGally)
 
 plot(mpg[,2:6])
 ggpairs(mpg[,2:6])
+ggpairs(mpg[,2:5])
 
 ggplot(mpg, aes(x=date, y=price)) + geom_point() + geom_smooth(method = 'lm')
 ggplot(mpg, aes(x=date, y=miles)) + geom_point() + geom_smooth(method = 'lm')
