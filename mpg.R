@@ -128,6 +128,18 @@ ggplot(mpg, aes(gallons)) +
   geom_density(color='black', fill='red', alpha=0.25) 
 
 
+
+ggplot(mpg, aes(mpg)) +
+  geom_density(color='black', fill='red', alpha=0.25) +
+  facet_grid( ~ car)
+
+
+ggplot(mpg, aes(car, mpg)) + geom_boxplot(aes(group=car))
+ggplot(mpg, aes(car, cost)) + geom_boxplot(aes(group=car))
+ggplot(mpg, aes(car, miles)) + geom_boxplot(aes(group=car))
+ggplot(mpg, aes(car, gallons)) + geom_boxplot(aes(group=car))
+
+
 ggplot(mpg, aes(year, mpg)) + geom_boxplot(aes(group=year))
 ggplot(mpg, aes(year, cost)) + geom_boxplot(aes(group=year))
 ggplot(mpg, aes(year, miles)) + geom_boxplot(aes(group=year))
