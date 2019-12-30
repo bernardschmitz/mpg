@@ -19,9 +19,14 @@ mpg$yyyymm <- floor_date(mpg$date, 'month')
 mpg[order(date), dt := as.numeric(date - shift(date))]
 mpg[1,'dt'] <- 0
 
+mpg$car <- factor(mpg$car)
+
+mpg[car=='BMW', .(median(mpg), median(dt), median(cost), median(miles))]
+
 mean(mpg$dt)
 
-plot(mpg$dt, mpg$miles)
+plot(mpg$dt, mpg$miles, col=mpg$car)
+plot(mpg$dt, mpg$mpg, col=mpg$car)
 
 plot(mpg$price, mpg$gallons, col=mpg$miles)
 
@@ -130,7 +135,7 @@ ggplot(mpg, aes(gallons)) +
 
 
 ggplot(mpg, aes(mpg)) +
-  geom_density(color='black', fill='red', alpha=0.25) +
+  geom_density(aes(fill=car), color='black', alpha=0.25) +
   facet_grid( ~ car)
 
 
