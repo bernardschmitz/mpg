@@ -186,6 +186,7 @@ library(hexbin)
 ggplot(mpg) +
   geom_hex(aes(yyyymm, mpg), color='white', bins=13*4) 
 
+library(plyr)
 library(dplyr)
 library(Rmisc)
 
@@ -305,7 +306,7 @@ qq <- mpg %>% mutate(yyyy=year(date), g=cumsum(gallons), t=cumsum(gallons*price)
 ggplot(qq, aes(x=yyyy, y=miles, group=yyyy)) + geom_boxplot(aes(fill=miles)) + scale_fill_continuous()
 
 
-x <- lapply(2005:2018, function(y) { 
+x <- lapply(2005:2019, function(y) { 
     p <- seq(1, 100, length.out = 100) / 100
     data.frame(y=y, p=p, q=quantile(qq[qq$yyyy==y,]$price, p)) 
   })
