@@ -3,7 +3,7 @@ library(data.table)
 library(lubridate)
 library(ggplot2)
 
-mpg <- fread("mpg.csv", stringsAsFactors = F)
+mpg <- fread("mpg/mpg.csv", stringsAsFactors = F)
 
 mpg$date <- as.POSIXct(strptime(mpg$date, '%m/%d/%Y'))
 mpg$mpg <- mpg$miles / mpg$gallons
@@ -287,7 +287,7 @@ mpg %>% group_by(d=floor_date(date, 'years')) %>% dplyr::summarise(n=n(), mpg=me
 library(forecast)
 
 q <- mpg %>% group_by(d=floor_date(date, 'months')) %>% dplyr::summarise(n=n(), mpg=mean(mpg))
-m <- ts(q$mpg, frequency = 12, start=c(2005,3), end=c(2017,9))
+m <- ts(q$mpg, frequency = 12, start=c(2005,3), end=c(2021,9))
 fit <- auto.arima(m)
 plot(forecast(fit, h=12))
 
