@@ -3,7 +3,7 @@ library(data.table)
 library(lubridate)
 library(ggplot2)
 
-mpg <- fread("mpg/mpg.csv", stringsAsFactors = F)
+mpg <- fread("~/mpg/mpg.csv", stringsAsFactors = F)
 
 mpg$date <- as.POSIXct(strptime(mpg$date, '%m/%d/%Y'))
 mpg$mpg <- mpg$miles / mpg$gallons
@@ -287,7 +287,7 @@ mpg %>% group_by(d=floor_date(date, 'years')) %>% dplyr::summarise(n=n(), mpg=me
 library(forecast)
 
 q <- mpg %>% group_by(d=floor_date(date, 'months')) %>% dplyr::summarise(n=n(), mpg=mean(mpg))
-m <- ts(q$mpg, frequency = 12, start=c(2005,3), end=c(2021,9))
+m <- ts(q$mpg, frequency = 12, start=c(2005,3), end=c(2022,12))
 fit <- auto.arima(m)
 plot(forecast(fit, h=12))
 
@@ -306,7 +306,7 @@ qq <- mpg %>% mutate(yyyy=year(date), g=cumsum(gallons), t=cumsum(gallons*price)
 ggplot(qq, aes(x=yyyy, y=miles, group=yyyy)) + geom_boxplot(aes(fill=miles)) + scale_fill_continuous()
 
 
-x <- lapply(2005:2019, function(y) { 
+x <- lapply(2005:2022, function(y) { 
     p <- seq(1, 100, length.out = 100) / 100
     data.frame(y=y, p=p, q=quantile(qq[qq$yyyy==y,]$price, p)) 
   })
@@ -465,7 +465,10 @@ v <- mpg %>% group_by(yyyy=year(date), mm=month(date)) %>% dplyr::summarise( mpg
 
 ggplot(v) + geom_line(aes(group=yyyy, x=mm, y=mpg)) + facet_wrap( ~ yyyy, ncol=3 )
 
-ggplot(v) + geom_line(aes(x=1:147, y=ampg))
+v
+
+
+ggplot(v) + geom_line(aes(x=1:167, y=ampg))
 
 k <- ts(v[,c('mpg')], frequency = 12)
 
