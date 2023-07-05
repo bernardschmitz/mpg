@@ -111,10 +111,10 @@ plot(mpg[,2:6])
 ggpairs(mpg[,2:6])
 ggpairs(mpg[,2:5])
 
-ggplot(mpg, aes(x=date, y=price)) + geom_point() + geom_smooth(method = 'lm')
-ggplot(mpg, aes(x=date, y=miles)) + geom_point() + geom_smooth(method = 'lm')
-ggplot(mpg, aes(x=date, y=gallons)) + geom_point() + geom_smooth(method = 'lm')
-ggplot(mpg, aes(x=date, y=mpg)) + geom_point() + geom_smooth(method = 'lm')
+ggplot(mpg, aes(x=date, y=price, color=car)) + geom_point() + geom_smooth(method = 'lm')
+ggplot(mpg, aes(x=date, y=miles, color=car)) + geom_point() + geom_smooth(method = 'lm')
+ggplot(mpg, aes(x=date, y=gallons, color=car)) + geom_point() + geom_smooth(method = 'lm')
+ggplot(mpg, aes(x=date, y=mpg, color=car)) + geom_point() + geom_smooth(method = 'lm')
 
 plot(mpg$date, cumsum(mpg$price), type='l')
 plot(mpg$date, cumsum(mpg$gallons), type='l')
@@ -124,19 +124,17 @@ ggplot(mpg, aes(price)) +
   geom_density(color='black', fill='red', alpha=0.25) 
 
 ggplot(mpg, aes(mpg)) +
-  geom_density(color='black', fill='red', alpha=0.25) 
-
-ggplot(mpg, aes(miles)) +
-  geom_density(color='black', fill='red', alpha=0.25) 
-
-ggplot(mpg, aes(gallons)) +
-  geom_density(color='black', fill='red', alpha=0.25) 
-
-
-
-ggplot(mpg, aes(mpg)) +
   geom_density(aes(fill=car), color='black', alpha=0.25) +
   facet_grid( ~ car)
+
+ggplot(mpg, aes(miles)) +
+  geom_density(aes(fill=car), color='black', alpha=0.25) +
+  facet_grid( ~ car)
+
+ggplot(mpg, aes(gallons)) +
+  geom_density(aes(fill=car), color='black', alpha=0.25) +
+  facet_grid( ~ car)
+
 
 
 ggplot(mpg, aes(car, mpg)) + geom_boxplot(aes(group=car))
